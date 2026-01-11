@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1e3a8a">
+    <title>Maratón Miami 2026 - Cuenta Regresiva</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icon-192.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #0891b2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 700px;
+            width: 100%;
+        }
+        
+        .event-image {
+            width: 100%;
+            border-radius: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+        
+        .event-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .title {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .title h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .event-details {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            color: rgba(255,255,255,0.9);
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .countdown {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .time-unit {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px 10px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        .time-value {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 700;
+            color: white;
+            line-height: 1;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .time-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+        
+        .motivation {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        .motivation h2 {
+            color: white;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+        
+        .motivation p {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 480px) {
+            .countdown {
+                gap: 10px;
+            }
+            
+            .time-unit {
+                padding: 15px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Imagen del evento -->
+        <div class="event-image">
+            <img src="marathon-image.jpg" alt="Maratón Miami 2026" id="eventImg">
+        </div>
+        
+        <!-- Título y detalles -->
+        <div class="title">
+            <h1>Maratón Miami 2026</h1>
+            <div class="event-details">
+                <div class="detail-item">
+                    <span>📅</span>
+                    <span>25 de Enero, 2026</span>
+                </div>
+                <div class="detail-item">
+                    <span>⏰</span>
+                    <span>6:00 AM</span>
+                </div>
+            </div>
+            <div class="event-details">
+                <div class="detail-item">
+                    <span>📍</span>
+                    <span>Miami, Florida</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contador regresivo -->
+        <div class="countdown">
+            <div class="time-unit">
+                <div class="time-value" id="days">00</div>
+                <div class="time-label">Días</div>
+            </div>
+            <div class="time-unit">
+                <div class="time-value" id="hours">00</div>
+                <div class="time-label">Horas</div>
+            </div>
+            <div class="time-unit">
+                <div class="time-value" id="minutes">00</div>
+                <div class="time-label">Min</div>
+            </div>
+            <div class="time-unit">
+                <div class="time-value" id="seconds">00</div>
+                <div class="time-label">Seg</div>
+            </div>
+        </div>
+        
+        <!-- Mensaje motivacional -->
+        <div class="motivation">
+            <h2>🏃‍♂️ ¡El desafío está cerca!</h2>
+            <p>Cada segundo cuenta. Mantente enfocado y preparado para conquistar los 21.1 km</p>
+        </div>
+    </div>
+    
+    <script>
+        // Fecha del evento: 25 de enero 2026, 6:00 AM (EST - Miami)
+        const eventDate = new Date('2026-01-25T06:00:00-05:00').getTime();
+        
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = eventDate - now;
+            
+            if (distance > 0) {
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                
+                document.getElementById('days').textContent = String(days).padStart(2, '0');
+                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+            } else {
+                document.getElementById('days').textContent = '00';
+                document.getElementById('hours').textContent = '00';
+                document.getElementById('minutes').textContent = '00';
+                document.getElementById('seconds').textContent = '00';
+            }
+        }
+        
+        // Actualizar cada segundo
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+        
+        // Registrar Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(reg => console.log('Service Worker registrado'))
+                .catch(err => console.log('Error al registrar SW:', err));
+        }
+        
+        // Manejo de error de imagen
+        document.getElementById('eventImg').onerror = function() {
+            this.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675"><rect fill="%23f97316" width="1200" height="675"/><text x="50%" y="50%" font-size="40" fill="white" text-anchor="middle" dy=".3em">Coloca aquí marathon-image.jpg</text></svg>';
+        };
+    </script>
+</body>
+</html>
