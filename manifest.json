@@ -2,21 +2,21 @@
   "name": "Maratón Miami 2026",
   "short_name": "Miami 2026",
   "description": "Cuenta regresiva para el Maratón de Miami 2026",
-  "start_url": "/marathon_miami_2026-/",
-  "scope": "/marathon_miami_2026-/",
+  "start_url": "/marathon-miami-2026/",
+  "scope": "/marathon-miami-2026/",
   "display": "standalone",
   "background_color": "#1e3a8a",
   "theme_color": "#1e3a8a",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/marathon_miami_2026-/icon-192.png",
+      "src": "/marathon-miami-2026/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/marathon_miami_2026-/icon-512.png",
+      "src": "/marathon-miami-2026/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

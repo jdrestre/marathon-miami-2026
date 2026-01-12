@@ -1,5 +1,5 @@
-const CACHE_NAME = 'marathon-miami-v3';
-const BASE_PATH = '/marathon_miami_2026-';
+const CACHE_NAME = 'marathon-miami-v4';
+const BASE_PATH = '/marathon-miami-2026';
 
 const urlsToCache = [
   `${BASE_PATH}/`,
