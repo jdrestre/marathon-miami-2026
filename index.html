@@ -239,5 +239,44 @@
             this.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675"><rect fill="%23f97316" width="1200" height="675"/><text x="50%" y="50%" font-size="40" fill="white" text-anchor="middle" dy=".3em">Coloca aquí marathon-image.jpg</text></svg>';
         };
     </script>
+    <script>
+        // SISTEMA DE ACTUALIZACIÓN AUTOMÁTICA SILENCIOSA
+        if ('serviceWorker' in navigator) {
+            let refreshing = false;
+            
+            navigator.serviceWorker.register('service-worker.js')
+                .then(reg => {
+                    console.log('Service Worker registrado');
+                    
+                    // Verificar actualizaciones cada 30 segundos
+                    setInterval(() => {
+                        reg.update();
+                    }, 30000);
+                    
+                    // Detectar cuando hay un nuevo Service Worker
+                    reg.addEventListener('updatefound', () => {
+                        const newWorker = reg.installing;
+                        
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                // Actualizar automáticamente sin preguntar
+                                console.log('Nueva versión detectada, actualizando...');
+                                newWorker.postMessage({ type: 'SKIP_WAITING' });
+                            }
+                        });
+                    });
+                })
+                .catch(err => console.log('Error al registrar SW:', err));
+            
+            // Recargar la página cuando el nuevo SW tome control
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (!refreshing) {
+                    refreshing = true;
+                    console.log('Recargando con nueva versión...');
+                    window.location.reload();
+                }
+            });
+        }
+    </script>
 </body>
 </html>
