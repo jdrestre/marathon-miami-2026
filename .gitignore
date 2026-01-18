@@ -1,6 +1,3 @@
-# Firebase credentials - NEVER commit this file
-firebase-config.js
-
 # Node modules (if needed in the future)
 node_modules/
 
