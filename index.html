@@ -453,24 +453,45 @@
         };
     </script>
 
-    <script>
-        // SISTEMA DE MENSAJES FAMILIARES
-        const STORAGE_KEY = 'marathonMessages';
+    <script type="module">
+        // FIREBASE CONFIGURATION
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
 
-        // Cargar mensajes del almacenamiento local
-        function loadMessages() {
-            const messages = localStorage.getItem(STORAGE_KEY);
-            return messages ? JSON.parse(messages) : [];
-        }
+        const firebaseConfig = {
+            apiKey: "AIzaSyCNSSYHxq2JhxeRGPuYvxopXY644zok4Qk",
+            authDomain: "marathon-miami-2026.firebaseapp.com",
+            databaseURL: "https://marathon-miami-2026-default-rtdb.firebaseio.com",
+            projectId: "marathon-miami-2026",
+            storageBucket: "marathon-miami-2026.appspot.com",
+            messagingSenderId: "1057896416212",
+            appId: "1:1057896416212:web:16d6c4ad51bd2a1127cc41",
+            measurementId: "G-RX687NS2T7"
+        };
 
-        // Guardar mensajes en almacenamiento local
-        function saveMessages(messages) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const messagesRef = ref(database, 'messages');
+
+        // Variables globales
+        let messagesData = {};
+        let isInitialized = false;
+
+        // Escuchar cambios en tiempo real desde Firebase
+        onValue(messagesRef, (snapshot) => {
+            const data = snapshot.val();
+            messagesData = data || {};
             renderMessages();
-        }
+            if (!isInitialized) {
+                isInitialized = true;
+            }
+        }, (error) => {
+            console.error('Error al conectar con Firebase:', error);
+            alert('Error al conectar con la base de datos. Verifica tu conexión a internet.');
+        });
 
         // Agregar nuevo mensaje
-        function addMessage() {
+        window.addMessage = function() {
             const senderName = document.getElementById('senderName').value.trim();
             const messageText = document.getElementById('messageText').value.trim();
 
@@ -479,44 +500,55 @@
                 return;
             }
 
-            const messages = loadMessages();
             const newMessage = {
-                id: Date.now(),
                 sender: senderName,
                 text: messageText,
                 timestamp: new Date().toLocaleString('es-ES')
             };
 
-            messages.unshift(newMessage); // Agregar al principio (más recientes primero)
-            saveMessages(messages);
+            // Guardar en Firebase
+            push(messagesRef, newMessage)
+                .then(() => {
+                    // Limpiar formulario
+                    document.getElementById('senderName').value = '';
+                    document.getElementById('messageText').value = '';
+                    document.getElementById('senderName').focus();
 
-            // Limpiar formulario
-            document.getElementById('senderName').value = '';
-            document.getElementById('messageText').value = '';
-            
-            // Enfocar el campo de nombre
-            document.getElementById('senderName').focus();
-
-            // Scroll automático al contenedor de mensajes
-            setTimeout(() => {
-                const container = document.getElementById('messagesContainer');
-                container.scrollTop = 0;
-            }, 100);
-        }
+                    // Scroll automático
+                    setTimeout(() => {
+                        const container = document.getElementById('messagesContainer');
+                        container.scrollTop = 0;
+                    }, 100);
+                })
+                .catch((error) => {
+                    console.error('Error al guardar mensaje:', error);
+                    alert('Error al enviar el mensaje. Intenta de nuevo.');
+                });
+        };
 
         // Renderizar mensajes en la página
         function renderMessages() {
-            const messages = loadMessages();
             const container = document.getElementById('messagesContainer');
-            const noMessages = document.getElementById('noMessages');
 
-            if (messages.length === 0) {
+            if (!messagesData || Object.keys(messagesData).length === 0) {
                 container.innerHTML = '<div class="no-messages">No hay mensajes aún. ¡Agrega el primero!</div>';
                 return;
             }
 
+            // Convertir objeto a array y ordenar por timestamp (más recientes primero)
+            const messagesArray = Object.entries(messagesData)
+                .map(([id, msg]) => ({
+                    id,
+                    ...msg
+                }))
+                .sort((a, b) => {
+                    const timeA = new Date(a.timestamp).getTime();
+                    const timeB = new Date(b.timestamp).getTime();
+                    return timeB - timeA;
+                });
+
             let html = '';
-            messages.forEach(msg => {
+            messagesArray.forEach(msg => {
                 html += `
                     <div class="message-item">
                         <div class="message-sender">💌 ${escapeHtml(msg.sender)}</div>
@@ -542,14 +574,17 @@
         }
 
         // Borrar todos los mensajes
-        function clearMessages() {
+        window.clearMessages = function() {
             if (confirm('¿Estás seguro de que deseas borrar todos los mensajes? Esta acción no se puede deshacer.')) {
-                localStorage.removeItem(STORAGE_KEY);
-                renderMessages();
+                remove(messagesRef)
+                    .catch((error) => {
+                        console.error('Error al borrar mensajes:', error);
+                        alert('Error al borrar los mensajes. Intenta de nuevo.');
+                    });
             }
-        }
+        };
 
-        // Permitir enviar mensaje con Enter en el textarea
+        // Permitir enviar mensaje con Ctrl+Enter en el textarea
         document.addEventListener('DOMContentLoaded', function() {
             const messageInput = document.getElementById('messageText');
             if (messageInput) {
@@ -558,16 +593,6 @@
                         addMessage();
                     }
                 });
-            }
-        });
-
-        // Cargar y renderizar mensajes al iniciar
-        renderMessages();
-
-        // Sincronizar mensajes entre pestañas
-        window.addEventListener('storage', function(e) {
-            if (e.key === STORAGE_KEY) {
-                renderMessages();
             }
         });
     </script>
