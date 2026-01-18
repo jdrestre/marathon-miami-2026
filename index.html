@@ -411,7 +411,7 @@
     </div>
     
     <!-- Cargar configuración de Firebase (archivo no versionado) -->
-    <script src="firebase-config.js"></script>
+    <script src="firebase-config.js" onload="console.log('✓ firebase-config.js cargado');" onerror="console.error('✗ Error al cargar firebase-config.js - asegúrate de que existe en el directorio raíz')"></script>
     
     <script>
         // Fecha del evento: 25 de enero 2026, 6:00 AM (EST - Miami)
@@ -464,8 +464,13 @@
         // Las credenciales se cargan desde firebase-config.js (no versionado en Git)
         // firebaseConfig debe estar definido en firebase-config.js
         if (typeof firebaseConfig === 'undefined') {
-            console.error('Error: firebase-config.js no se encontró. Asegúrate de que existe en el mismo directorio que index.html');
-            alert('Error de configuración: No se pudo cargar las credenciales de Firebase. Por favor, contacta al administrador.');
+            console.error('❌ Error de configuración de Firebase');
+            console.error('firebase-config.js no se encontró o no se cargó correctamente.');
+            console.error('Asegúrate de que:');
+            console.error('1. firebase-config.js existe en el mismo directorio que index.html');
+            console.error('2. Contiene la variable firebaseConfig con tus credenciales');
+            document.getElementById('messagesContainer').innerHTML = '<div class="no-messages" style="color: #ef4444; padding: 20px; text-align: center;"><strong>❌ Error de configuración</strong><br>No se pudieron cargar las credenciales de Firebase.<br>Contacta al administrador.</div>';
+            throw new Error('firebaseConfig no definido');
         }
 
         const app = initializeApp(firebaseConfig);
